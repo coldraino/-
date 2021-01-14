@@ -1,0 +1,217 @@
+from tkinter import *
+import requests
+from bs4 import BeautifulSoup
+
+# 주의할 점
+# pack()도 grid()도 쓰고 싶다면
+# 원래만든 win과 더불어 frame을 만든다.
+# 그래서 win 과 frame 각각에
+# pack()나 grid() 중 하나만 적용한다.
+# 만약 win에 pack()를 썼으면 win에 들어가는 모든 위젯은
+# pack()만 써야함, grid()를 쓰고 싶다면 frame에 넣어서
+# grid()사용
+
+url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=남해제일고등학교"
+req = requests.get(url)
+soup = BeautifulSoup(req.text, "html.parser")
+급식데이터 = soup.find_all('li', {'class':'menu_info'})
+
+급식리스트 = []
+search_list = []
+아이템 = ""
+없앨숫자 = 0
+스플릿 = []
+문자열 = ""
+새리스트 = []
+
+for menu_info in 급식데이터:
+    if menu_info.get_text() not in 급식리스트:
+        급식리스트.append(menu_info.get_text())
+
+#급식리스트에서 1.3.5. 이런 숫자 없애기
+for i in range(len(급식리스트)):
+    아이템 = str(급식리스트[i])
+    for j in range(11):
+        if j != 0:
+            없앨숫자 = str(j) + "."
+            아이템 = 아이템.replace(없앨숫자, "")
+    급식리스트[i] = 아이템
+    
+    # 13. 14. 15. -> 111 이렇게 남는거 제거하기
+    if len(스플릿) != 0:
+        스플릿 = []
+    스플릿 = 아이템.split()
+    for k in range(len(스플릿)):
+        if k > 1:
+            스플릿[k] = 스플릿[k].replace("1", "")
+    문자열 = ' '.join(스플릿)
+    급식리스트[i] = 문자열
+
+def latest_menu():
+    txt.delete("0.0","end")
+
+    for r in range(5):
+        if r != 0:
+            새리스트 = 급식리스트[-r].split()
+            for k in range(len(새리스트)):
+                if k < 3:
+                    if k == 0:
+                        txt.insert(INSERT, "		            ")
+                    txt.insert(INSERT, 새리스트[k] + " ")
+                else:
+                    txt.insert(INSERT, "\n")
+                    txt.insert(INSERT, "\n")
+                    txt.insert(INSERT, "		            ")
+                    txt.insert(INSERT, 새리스트[k])
+            txt.insert(INSERT, "\n")
+            txt.insert(INSERT, "\n")
+            txt.insert(INSERT, "		            ")
+            txt.insert(INSERT, "ㅡㅡㅡㅡㅡㅡㅡ")
+            txt.insert(INSERT, "\n")
+            txt.insert(INSERT, "\n")
+    
+def search(self):
+    txt.delete("0.0","end")
+
+    global search_list
+    global res
+    global 급식리스트
+    global 새리스트
+  
+    res = entry.get()
+
+    if res == "제작자":
+        txt.delete("0.0","end")
+        txt.insert(INSERT,"대 남해제일고 2513 박찬우")
+        txt.insert(INSERT,"\n")
+
+    if len(search_list) == 0:
+        for i in range(len(급식리스트)):
+            if res in 급식리스트[i]:
+                search_list.append(급식리스트[i])
+        # 메뉴 한 칸씩 띄우기, 텍스트 가운데 정렬하기
+        for r in range(len(search_list)):
+            새리스트 = search_list[r].split()
+            for k in range(len(새리스트)):
+                if k < 3:
+                    if k == 0:
+                        txt.insert(INSERT, "		            ")
+                    # 1월 5일 [조식] 이렇게 되어있는건 띄어쓰기만
+                    txt.insert(INSERT, 새리스트[k] + " ")
+                else:
+                    # 메뉴들은 줄 바꿈하고 가운데 정렬하기
+                    txt.insert(INSERT, "\n")
+                    txt.insert(INSERT, "\n")
+                    txt.insert(INSERT, "		            ")
+                    txt.insert(INSERT, 새리스트[k])
+            txt.insert(INSERT, "\n")
+            txt.insert(INSERT, "\n")
+            txt.insert(INSERT, "		            ")
+            txt.insert(INSERT, "ㅡㅡㅡㅡㅡㅡㅡ")
+            txt.insert(INSERT, "\n")
+            txt.insert(INSERT, "\n")
+    else:
+        search_list=[]
+        
+        for i in range(len(급식리스트)):
+            if res in 급식리스트[i]:
+                search_list.append(급식리스트[i])
+
+        for r in range(len(search_list)):
+            새리스트 = search_list[r].split()
+            for k in range(len(새리스트)):
+                if k < 3:
+                    if k == 0:
+                        txt.insert(INSERT, "		            ")
+                    # 1월 5일 [조식] 이렇게 되어있는건 띄어쓰기만
+                    txt.insert(INSERT, 새리스트[k] + " ")
+                else:
+                    # 메뉴들은 줄 바꿈하고 가운데 정렬하기
+                    txt.insert(INSERT, "\n")
+                    txt.insert(INSERT, "\n")
+                    txt.insert(INSERT, "		            ")
+                    txt.insert(INSERT, 새리스트[k])
+            txt.insert(INSERT, "\n")
+            txt.insert(INSERT, "\n")
+            txt.insert(INSERT, "		            ")
+            txt.insert(INSERT, "ㅡㅡㅡㅡㅡㅡㅡ")
+            txt.insert(INSERT, "\n")
+            txt.insert(INSERT, "\n")
+
+def cb_insert():
+    global res
+    res = ""
+
+    if var1.get() == 1:
+        entry.delete(0, "end")
+        entry.insert(INSERT, "조식")
+        search(res)
+
+    else:
+        entry.delete(0, "end")
+
+
+    if var2.get() == 1:
+        entry.delete(0, "end")
+        entry.insert(INSERT, "중식")
+        search(res)
+
+    else:
+        entry.delete(0, "end")
+
+    if var3.get() == 1:
+        entry.delete(0, "end")
+        entry.insert(INSERT, "석식")
+        search(res)
+
+    else:
+        entry.delete(0, "end")
+
+win = Tk()
+win.geometry("600x1000")
+win.title("제일고 급식 탐색기")
+win.option_add("*Font","HY견고딕 13")
+win.resizable(False, True)
+
+frame1 = Frame(win)
+frame1.pack()
+
+var1 = IntVar()
+var2 = IntVar()
+var3 = IntVar()
+
+c1 = Checkbutton(frame1, text='조식',variable=var1, onvalue=1, offvalue=0, command=cb_insert)
+c2 = Checkbutton(frame1, text='중식',variable=var2, onvalue=1, offvalue=0, command=cb_insert)
+c3 = Checkbutton(frame1, text='석식',variable=var3, onvalue=1, offvalue=0, command=cb_insert)
+
+c1.grid(row=2, column=0)
+c2.grid(row=2, column=1)
+c3.grid(row=2, column=2)
+
+tb_explain = Label(win, text="엔터를 눌러서 검색")
+tb_explain.pack()
+
+tb1 = Label(win, text="급식 검색으로 원하는 날짜의 급식 또는 원하는 메뉴를 검색할 수 있습니다.")
+tb1.pack()
+
+tb2 = Label(win, text="ex) 1월 5일" + "\n" + "ex) 샐러드")
+tb2.pack()
+
+tb = Label(win, text="남해제일고등학교 급식 확인 프로그램", bg="light green")
+tb.pack()
+
+btn_latest = Button(win, text="최근 급식 확인", command=latest_menu, bg="light yellow",width=12, height=2)
+btn_latest.pack()
+
+tb3 = Label(win, text="최근 4개의 급식을 확인할 수 있습니다.")
+tb3.pack()
+
+entry = Entry(frame1, bg="sky blue", text="enter", width=15)
+entry.bind('<Return>', search)
+entry.grid(row=1, column=1)
+
+txt = Text(win, width=100, height=300)
+txt.tag_configure("center", justify='center')
+txt.pack()
+
+win.mainloop()
