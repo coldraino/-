@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 # pack()만 써야함, grid()를 쓰고 싶다면 frame에 넣어서
 # grid()사용
 
-url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=남해제일고등학교"
+url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=OO"
 req = requests.get(url)
 soup = BeautifulSoup(req.text, "html.parser")
 급식데이터 = soup.find_all('li', {'class':'menu_info'})
@@ -197,7 +197,7 @@ tb1.pack()
 tb2 = Label(win, text="ex) 1월 5일" + "\n" + "ex) 샐러드")
 tb2.pack()
 
-tb = Label(win, text="남해제일고등학교 급식 확인 프로그램", bg="light green")
+tb = Label(win, text="OO학교 급식 확인 프로그램", bg="light green")
 tb.pack()
 
 btn_latest = Button(win, text="최근 급식 확인", command=latest_menu, bg="light yellow",width=12, height=2)
